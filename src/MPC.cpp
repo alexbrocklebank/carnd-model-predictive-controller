@@ -45,6 +45,11 @@ class FG_eval {
     // the Solver function below.
 	  fg[0] = 0;
 
+	  // FIXME: Find out what the true Reference Velocity
+	  // Both the reference cross track and orientation errors are 0.
+	  // The reference velocity is set to 40 mph.
+	  double ref_v = 40;
+
 	  for (int t = 0; t < N; t++) {
 		  fg[0] += CppAD::pow(vars[cte_start + t], 2);
 		  fg[0] += CppAD::pow(vars[epsi_start + t], 2);
