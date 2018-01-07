@@ -154,16 +154,15 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
   }
-  double x = x0[0];
-  double y = x0[1];
-  double psi = x0[2];
-  double v = x0[3];
-  double cte = x0[4];
-  double epsi = x0[5];
+  double x = state[0];
+  double y = state[1];
+  double psi = state[2];
+  double v = state[3];
+  double cte = state[4];
+  double epsi = state[5];
 
   // Initial value of the independent variables.
   // Should be 0 except for the initial values.
-  Dvector vars(n_vars);
   for (int i = 0; i < n_vars; i++) {
     vars[i] = 0.0;
   }
@@ -200,8 +199,6 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Lower and upper limits for constraints
   // All of these should be 0 except the initial
   // state indices.
-  Dvector constraints_lowerbound(n_constraints);
-  Dvector constraints_upperbound(n_constraints);
   for (int i = 0; i < n_constraints; i++) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
