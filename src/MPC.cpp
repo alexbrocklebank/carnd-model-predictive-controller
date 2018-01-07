@@ -148,6 +148,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Lower and upper limits for the constraints
   // Should be 0 besides initial state.
+  Dvector constraints_lowerbound(n_constraints);
+  Dvector constraints_upperbound(n_constraints);
   for (int i = 0; i < n_constraints; i++) {
     constraints_lowerbound[i] = 0;
     constraints_upperbound[i] = 0;
@@ -161,9 +163,9 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // Initial value of the independent variables.
   // Should be 0 except for the initial values.
-
+  Dvector vars(n_vars);
   for (int i = 0; i < n_vars; i++) {
-	  vars[i] = 0.0;
+    vars[i] = 0.0;
   }
   // Set the initial variable values
   vars[x_start] = x;
@@ -176,23 +178,23 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   // Set all non-actuators upper and lowerlimits
   // to the max negative and positive values.
   for (int i = 0; i < delta_start; i++) {
-	  vars_lowerbound[i] = -1.0e19;
-	  vars_upperbound[i] = 1.0e19;
+    vars_lowerbound[i] = -1.0e19;
+    vars_upperbound[i] = 1.0e19;
   }
 
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians).
   // NOTE: Feel free to change this to something else.
   for (int i = delta_start; i < a_start; i++) {
-	  vars_lowerbound[i] = -0.436332;
-	  vars_upperbound[i] = 0.436332;
+    vars_lowerbound[i] = -0.436332;
+    vars_upperbound[i] = 0.436332;
   }
 
   // Acceleration/decceleration upper and lower limits.
   // NOTE: Feel free to change this to something else.
   for (int i = a_start; i < n_vars; i++) {
-	  vars_lowerbound[i] = -1.0;
-	  vars_upperbound[i] = 1.0;
+    vars_lowerbound[i] = -1.0;
+    vars_upperbound[i] = 1.0;
   }
 
   // Lower and upper limits for constraints
@@ -201,8 +203,8 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   Dvector constraints_lowerbound(n_constraints);
   Dvector constraints_upperbound(n_constraints);
   for (int i = 0; i < n_constraints; i++) {
-	  constraints_lowerbound[i] = 0;
-	  constraints_upperbound[i] = 0;
+    constraints_lowerbound[i] = 0;
+    constraints_upperbound[i] = 0;
   }
   constraints_lowerbound[x_start] = x;
   constraints_lowerbound[y_start] = y;
