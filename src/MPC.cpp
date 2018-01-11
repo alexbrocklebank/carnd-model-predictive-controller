@@ -10,10 +10,9 @@ using CppAD::AD;
 size_t N = 10;
 double dt = 0.1;
 
-// FIXME: Find out what the true Reference Velocity
 // Both the reference cross track and orientation errors are 0.
-// The reference velocity is set to 40 mph.
-double ref_v = 60;
+// The reference velocity is set to 50 mph.
+double ref_v = 50;
 double ref_cte = 0;
 double ref_epsi = 0;
 
