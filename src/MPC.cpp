@@ -13,7 +13,7 @@ double dt = 0.1;
 // FIXME: Find out what the true Reference Velocity
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 40 mph.
-double ref_v = 100;
+double ref_v = 60;
 double ref_cte = 0;
 double ref_epsi = 0;
 
@@ -46,7 +46,6 @@ class FG_eval {
 
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
   void operator()(ADvector& fg, const ADvector& vars) {
-    // TODO: implement MPC
     // `fg` a vector of the cost constraints, `vars` is a vector of variable values (state & actuators)
     // NOTE: You'll probably go back and forth between this function and
     // the Solver function below.
