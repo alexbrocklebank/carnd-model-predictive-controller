@@ -7,8 +7,8 @@ using CppAD::AD;
 
 // TODO: Set the timestep length and duration
 // Starting with values similar to lesson 19
-size_t N = 10;
-double dt = 0.1;
+size_t N = 12;
+double dt = 0.05;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 50 mph.
@@ -46,8 +46,6 @@ class FG_eval {
   typedef CPPAD_TESTVECTOR(AD<double>) ADvector;
   void operator()(ADvector& fg, const ADvector& vars) {
     // `fg` a vector of the cost constraints, `vars` is a vector of variable values (state & actuators)
-    // NOTE: You'll probably go back and forth between this function and
-    // the Solver function below.
 	  fg[0] = 0;
 
 	  for (int t = 0; t < N; t++) {
@@ -97,17 +95,8 @@ class FG_eval {
 
 		  AD<double> f0 = coeffs[0] + coeffs[1] * x0 + coeffs[2] * x0 * x0 + coeffs[3] * x0 * x0 * x0;
 		  AD<double> psides0 = CppAD::atan(3 * coeffs[3] * x0 * x0 + 2 * coeffs[2] * x0 + coeffs[1]);
-
-		  // Here's `x` to get you started.
-		  // The idea here is to constraint this value to be 0.
-		  //
-		  // Recall the equations for the model:
-		  // x_[t+1] = x[t] + v[t] * cos(psi[t]) * dt
-		  // y_[t+1] = y[t] + v[t] * sin(psi[t]) * dt
-		  // psi_[t+1] = psi[t] + v[t] / Lf * delta[t] * dt
-		  // v_[t+1] = v[t] + a[t] * dt
-		  // cte[t+1] = f(x[t]) - y[t] + v[t] * sin(epsi[t]) * dt
-		  // epsi[t+1] = psi[t] - psides[t] + v[t] * delta[t] / Lf * dt
+		  
+		  // Equations
 		  fg[1 + x_start + t] = x1 - (x0 + v0 * CppAD::cos(psi0) * dt);
 		  fg[1 + y_start + t] = y1 - (y0 + v0 * CppAD::sin(psi0) * dt);
 		  fg[1 + psi_start + t] = psi1 - (psi0 + v0 * delta0 / Lf * dt);
@@ -131,7 +120,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   size_t i;
   typedef CPPAD_TESTVECTOR(double) Dvector;
 
-
+  // Break apart the state vector into individual variables
   double x = state[0];
   double y = state[1];
   double psi = state[2];
@@ -139,13 +128,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   double cte = state[4];
   double epsi = state[5];
 
-  // TODO: Set the number of model variables (includes both states and inputs).
-  // For example: If the state is a 4 element vector, the actuators is a 2
-  // element vector and there are 10 timesteps. The number of variables is:
-  //
-  // 4 * 10 + 2 * 9
-  // number of independent variables
-  // N timesteps == N - 1 actuations
+  // Set the number of model variables (includes both states and inputs).
   size_t n_vars = N * 6 + (N - 1) * 2;
   // Number of constraints
   size_t n_constraints = N * 6;
@@ -168,14 +151,12 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 
   // The upper and lower limits of delta are set to -25 and 25
   // degrees (values in radians).
-  // NOTE: Feel free to change this to something else.
   for (int i = delta_start; i < a_start; i++) {
 	  vars_lowerbound[i] = -0.436332 * Lf;
 	  vars_upperbound[i] = 0.436332 * Lf;
   }
 
   // Acceleration/decceleration upper and lower limits.
-  // NOTE: Feel free to change this to something else.
   for (int i = a_start; i < n_vars; i++) {
 	  vars_lowerbound[i] = -1.0;
 	  vars_upperbound[i] = 1.0;
@@ -247,6 +228,7 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
   auto cost = solution.obj_value;
   std::cout << "Cost " << cost << std::endl;
 
+  // Assemble Results
   vector<double> result;
 
   result.push_back(solution.x[delta_start]);
@@ -257,10 +239,6 @@ vector<double> MPC::Solve(Eigen::VectorXd state, Eigen::VectorXd coeffs) {
 	  result.push_back(solution.x[y_start + i + 1]);
   }
 
-  // TODO: Return the first actuator values. The variables can be accessed with
-  // `solution.x[i]`.
-  //
-  // {...} is shorthand for creating a vector, so auto x1 = {1.0,2.0}
-  // creates a 2 element double vector.
+  // Return the first actuator values.
   return result;
 }
