@@ -7,8 +7,8 @@ using CppAD::AD;
 
 // TODO: Set the timestep length and duration
 // Starting with values similar to lesson 19
-size_t N = 12;
-double dt = 0.05;
+size_t N = 10;
+double dt = 0.1;
 
 // Both the reference cross track and orientation errors are 0.
 // The reference velocity is set to 50 mph.
